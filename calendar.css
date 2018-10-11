@@ -1,0 +1,50 @@
+.CDCalendar {
+    width: 100%;
+    overflow: hidden;
+}
+
+.CDCalendar table {
+    width: 100%;
+}
+
+.CDCalendar .symbol {
+  padding-left: 0;
+  padding-right: 10px;
+  font-size: 80%;
+  vertical-align: top;
+}
+
+.CDCalendar .symbol span {
+  display: inline-block;
+  -ms-transform: translate(0, 2px); /* IE 9 */
+  -webkit-transform: translate(0, 2px); /* Safari */
+  transform: translate(0, 2px);
+}
+
+.CDCalendar .title {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.CDCalendar .event {
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+}
+
+.CDCalendar .time {
+    display: block;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: 0px;
+    border-left: 1em solid;
+    border-image: linear-gradient(to left, black, rgba(0, 0, 0, 0)) 1 100%;
+    text-align: right;
+}
+.CDCalendar .time span {
+    background-color: black;
+    padding: 0px;
+    margin: 0px;
+    padding-left: 0.5em;
+}
