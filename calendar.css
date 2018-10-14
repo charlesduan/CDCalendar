@@ -38,7 +38,7 @@
     top: 0px;
     right: 0px;
     padding: 0px;
-    border-left: 1em solid;
+    border-left: 2em solid;
     border-image: linear-gradient(to left, black, rgba(0, 0, 0, 0)) 1 100%;
     text-align: right;
 }
@@ -47,4 +47,5 @@
     padding: 0px;
     margin: 0px;
     padding-left: 0.5em;
+    border: 0px;
 }

@@ -222,7 +222,6 @@ Module.register("CDCalendar", {
                     var timeWrapper = document.createElement("span");
                     timeWrapper.className = "time light";
                     timeWrapper.align = "left";
-                    timeWrapper.style.paddingLeft = "2px";
                     var timeFormatString = "";
                     switch (config.timeFormat) {
                         case 12: {
