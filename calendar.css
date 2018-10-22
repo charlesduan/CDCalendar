@@ -32,6 +32,10 @@
     position: relative;
 }
 
+.CDCalendar .dateheader {
+    margin-top: .5em;
+}
+
 .CDCalendar .time {
     display: block;
     position: absolute;
