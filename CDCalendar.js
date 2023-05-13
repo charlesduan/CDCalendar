@@ -45,7 +45,8 @@ Module.register("CDCalendar", {
             "'s birthday": ""
         },
         broadcastEvents: true,
-        excludedEvents: []
+        excludedEvents: [],
+        customEvents: [], // Array of {keyword: "", symbol: "", color: ""} where Keyword is a regexp and symbol/color are to be applied for matched
     },
 
     // Define required scripts.
@@ -86,11 +87,10 @@ Module.register("CDCalendar", {
 
             const calendarConfig = {
                 maximumEntries: calendar.maximumEntries,
-                maximumNumberOfDays: calendar.maximumNumberOfDays
                 maximumNumberOfDays: calendar.maximumNumberOfDays,
                 pastDaysCount: calendar.pastDaysCount,
                 broadcastPastEvents: calendar.broadcastPastEvents,
-                selfSignedCert: calendar.selfSignedCert
+                selfSignedCert: calendar.selfSignedCert,
             };
 
             if (calendar.symbolClass === "undefined" || calendar.symbolClass === null) {
@@ -423,7 +423,7 @@ Module.register("CDCalendar", {
 
             wrapper.appendChild(eventWrapper);
 
-        }
+        });
 
         return wrapper;
     },
@@ -832,13 +832,100 @@ Module.register("CDCalendar", {
         //        var event = cloneObject(calendar[e]);
         const eventList = this.createEventList(false);
         for (const event of eventList) {
-            event.symbol = this.symbolsForUrl(url);
-            event.color = this.colorForUrl(url);
+            event.symbol = this.symbolsForEvent(event);
+            event.calendarName = this.calendarNameForUrl(event.url);
+            event.color = this.colorForUrl(event.url, false);
             delete event.url;
             //eventList.push(event);
         }
 
         this.sendNotification("CALENDAR_EVENTS", eventList);
 
-    }
+    },
+
+    /**
+     * Retrieves the symbols for a specific event.
+     *
+     * @param {object} event Event to look for.
+     * @returns {string[]} The symbols
+     */
+    symbolsForEvent: function (event) {
+        let symbols = this.getCalendarPropertyAsArray(
+            event.url, "symbol", this.config.defaultSymbol
+        );
+
+        if (event.recurringEvent === true &&
+            this.hasCalendarProperty(event.url, "recurringSymbol")) {
+            symbols = this.mergeUnique(
+                this.getCalendarPropertyAsArray(
+                    event.url, "recurringSymbol", this.config.defaultSymbol
+                ), symbols
+            );
+        }
+
+        if (event.fullDayEvent === true &&
+            this.hasCalendarProperty(event.url, "fullDaySymbol")) {
+            symbols = this.mergeUnique(
+                this.getCalendarPropertyAsArray(
+                    event.url, "fullDaySymbol", this.config.defaultSymbol
+                ), symbols
+            );
+        }
+
+        // If custom symbol is set, replace event symbol
+        for (let ev of this.config.customEvents) {
+            if (typeof ev.symbol !== "undefined" && ev.symbol !== "") {
+                let needle = new RegExp(ev.keyword, "gi");
+                if (needle.test(event.title)) {
+                    // Get the default prefix for this class name and add to the custom symbol provided
+                    const className = this.getCalendarProperty(
+                        event.url, "symbolClassName",
+                        this.config.defaultSymbolClassName
+                    );
+                    symbols[0] = className + ev.symbol;
+                    break;
+                }
+            }
+        }
+
+        return symbols;
+    },
+
+    mergeUnique: function (arr1, arr2) {
+        return arr1.concat(
+            arr2.filter(function (item) {
+                return arr1.indexOf(item) === -1;
+            })
+        );
+    },
+
+    getCalendarPropertyAsArray: function (url, property, defaultValue) {
+        let p = this.getCalendarProperty(url, property, defaultValue);
+        if (property === "symbol" ||
+            property === "recurringSymbol" ||
+            property === "fullDaySymbol") {
+            const className = this.getCalendarProperty(
+                url, "symbolClassName", this.config.defaultSymbolClassName
+            );
+            p = className + p;
+        }
+
+        if (!(p instanceof Array)) p = [p];
+        return p;
+    },
+
+    hasCalendarProperty: function (url, property) {
+        return !!this.getCalendarProperty(url, property, undefined);
+    },
+
+    /**
+     * Retrieves the calendar name for a specific calendar url.
+     *
+     * @param {string} url The calendar url
+     * @returns {string} The name of the calendar
+     */
+    calendarNameForUrl: function (url) {
+            return this.getCalendarProperty(url, "name", "");
+    },
+
 });

@@ -112,4 +112,16 @@ module.exports = NodeHelper.create({
         fetcher.startFetch();
     },
 
+    /**
+     *
+     * @param {object} fetcher the fetcher associated with the calendar
+     * @param {string} identifier the identifier of the calendar
+     */
+    broadcastEvents: function (fetcher, identifier) {
+        this.sendSocketNotification("CALENDAR_EVENTS", {
+            id: identifier,
+            url: fetcher.url(),
+            events: fetcher.events()
+        });
+    }
 });
